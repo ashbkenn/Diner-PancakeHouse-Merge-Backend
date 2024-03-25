@@ -1,6 +1,7 @@
 package edu.iu.habahram.DinerPancakeHouseMerge.controllers;
 
 import edu.iu.habahram.DinerPancakeHouseMerge.model.MenuItem;
+import edu.iu.habahram.DinerPancakeHouseMerge.model.PancakeHouseMenu;
 import edu.iu.habahram.DinerPancakeHouseMerge.repository.DinerRepository;
 import edu.iu.habahram.DinerPancakeHouseMerge.repository.PancakeHouseRepository;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
 @RestController
@@ -29,17 +31,20 @@ public class MergerController {
     public List<MenuItem> mergeMenus() {
         List<MenuItem> mergedMenu = new ArrayList<>();
 
-        // Get menus from repositories
+        // Get Diner menu items
         MenuItem[] dinerMenuItems = dinerRepository.getTheMenu();
-        List<MenuItem> pancakeHouseMenuItems = pancakeHouseRepository.getTheMenu();
 
-        // Convert array to list for diner menu items
-        for (MenuItem item : dinerMenuItems) {
-            mergedMenu.add(item);
+        // Get Pancake House menu items using iterator
+        PancakeHouseMenu pancakeHouseMenu = pancakeHouseRepository.getTheMenu();
+        Iterator<MenuItem> pancakeHouseIterator = pancakeHouseMenu.iterator();
+
+        // Add Diner menu items to the merged menu
+        Collections.addAll(mergedMenu, dinerMenuItems);
+
+        // Add Pancake House menu items to the merged menu
+        while (pancakeHouseIterator.hasNext()) {
+            mergedMenu.add(pancakeHouseIterator.next());
         }
-
-        // Add all pancake house menu items to the merged menu
-        mergedMenu.addAll(pancakeHouseMenuItems);
 
         // Sort the merged menu by name
         Collections.sort(mergedMenu, (item1, item2) -> item1.getName().compareToIgnoreCase(item2.getName()));
