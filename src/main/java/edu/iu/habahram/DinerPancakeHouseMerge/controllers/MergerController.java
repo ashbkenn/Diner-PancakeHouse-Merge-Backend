@@ -1,7 +1,6 @@
 package edu.iu.habahram.DinerPancakeHouseMerge.controllers;
 
 import edu.iu.habahram.DinerPancakeHouseMerge.model.MenuItem;
-import edu.iu.habahram.DinerPancakeHouseMerge.model.Menu;
 import edu.iu.habahram.DinerPancakeHouseMerge.repository.DinerRepository;
 import edu.iu.habahram.DinerPancakeHouseMerge.repository.PancakeHouseRepository;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -10,7 +9,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -19,8 +17,8 @@ import java.util.List;
 @RequestMapping("/merger")
 public class MergerController {
 
-    private final DinerRepository dinerRepository;
-    private final PancakeHouseRepository pancakeHouseRepository;
+    DinerRepository dinerRepository;
+    PancakeHouseRepository pancakeHouseRepository;
 
     public MergerController(DinerRepository dinerRepository, PancakeHouseRepository pancakeHouseRepository) {
         this.dinerRepository = dinerRepository;
@@ -28,30 +26,17 @@ public class MergerController {
     }
 
     @GetMapping
-    public List<MenuItem> mergeMenus() {
-        List<MenuItem> mergedMenu = new ArrayList<>();
-
-        // Get Diner menu items
-        Menu dinerMenu = dinerRepository.getTheMenu();
-        Iterator<MenuItem> dinerIterator = dinerMenu.createIterator();
-
-        // Get Pancake House menu items
-        Menu pancakeHouseMenu = pancakeHouseRepository.getTheMenu();
-        Iterator<MenuItem> pancakeHouseIterator = pancakeHouseMenu.createIterator();
-
-        // Add Diner menu items to the merged menu
-        while (dinerIterator.hasNext()) {
-            mergedMenu.add(dinerIterator.next());
+    public List<MenuItem> get() {
+        List<MenuItem> menuItems = new ArrayList<>();
+        Iterator<MenuItem> lunchItems = dinerRepository.getTheMenuIterator();
+        while(lunchItems.hasNext()) {
+            menuItems.add(lunchItems.next());
         }
 
-        // Add Pancake House menu items to the merged menu
-        while (pancakeHouseIterator.hasNext()) {
-            mergedMenu.add(pancakeHouseIterator.next());
+        Iterator<MenuItem> breakfastItems = pancakeHouseRepository.getTheMenuIterator();
+        while(breakfastItems.hasNext()) {
+            menuItems.add(breakfastItems.next());
         }
-
-        // Sort the merged menu by name
-        Collections.sort(mergedMenu, (item1, item2) -> item1.getName().compareToIgnoreCase(item2.getName()));
-
-        return mergedMenu;
+        return menuItems;
     }
 }
